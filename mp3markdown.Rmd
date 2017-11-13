@@ -1,0 +1,11 @@
+---
+title: "mp3"
+author: "Sunnie Ning and Ayumi Mizuno"
+date: "November 13, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
