@@ -5,7 +5,8 @@ date: "November 18, 2017"
 output: html_document
 ---
 ##Follow-up Films Across Time in Hollywood
-Problem statement: How have the proportion of follow-up films in Hollywood changed over the past century?
+###Problem statement: 
+How have the proportion of follow-up films in Hollywood changed over the past century?
 
 The purpose of this investigation is to explore the evolution of follow-up films in Hollywood over time. Specifically, we focus on the time frame betwee 1900 and 2019 to investigate whether sequels, remakes, and reboots are more frequent today than they used to be. 
 
@@ -21,10 +22,90 @@ load("reboot.Rda")
 load ("allhollywood.Rda")
 ```
 
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
 library(dplyr)
 library(ggplot2)
 library(ggthemes)
+library(tidyr)
+library(readr)
+library(mdsr)
+library(RMySQL)
+
+db <- dbConnect_scidb(dbname="imdb")
+```
+
+```{r, eval=FALSE}
+#query sequels
+
+sql_sequels <- db %>%
+  dbGetQuery("SELECT DISTINCT(t.id), t.title AS movie, t.production_year, t2.id, t2.title AS sequel_movie, t2.production_year
+FROM movie_companies mc
+JOIN company_name cn ON mc.company_id = cn.id
+JOIN title t ON mc.movie_id = t.id
+JOIN movie_link ml ON ml.movie_id = t.id
+JOIN title t2 ON ml.linked_movie_id = t2.id
+JOIN movie_info mi ON t.id = mi.movie_id
+WHERE cn.country_code = '[us]' 
+AND t.kind_id = 1 
+AND ml.link_type_id = 2 
+AND mi.info_type_id IN(4,8)
+AND mi.info IN('USA', 'English')")
+
+save(sql_sequels, file="sequels.Rda")
+```
+
+```{r, eval=FALSE}
+#query remakes
+sql_remade <- db %>%
+  dbGetQuery("SELECT DISTINCT(t.id), t.title AS movie, t.production_year, t2.id, t2.title AS remake_movie, t2.production_year
+FROM movie_companies mc
+JOIN company_name cn ON mc.company_id = cn.id
+JOIN title t ON mc.movie_id = t.id
+JOIN movie_link ml ON ml.movie_id = t.id
+JOIN title t2 ON ml.linked_movie_id = t2.id
+JOIN movie_info mi ON t.id = mi.movie_id
+WHERE cn.country_code = '[us]' 
+AND t.kind_id = 1 
+AND ml.link_type_id = 4 
+AND mi.info_type_id IN(4,8)
+AND mi.info IN('USA', 'English')")
+
+save(sql_remade, file="remakes.Rda")
+```
+```{r, eval=FALSE}
+#query reboots
+sql_reboot <- db %>%
+  dbGetQuery("SELECT DISTINCT(t.id), t.title AS movie, t.production_year, t2.id, t2.title AS reboot_movie, t2.production_year
+FROM movie_companies mc
+JOIN company_name cn ON mc.company_id = cn.id
+JOIN title t ON mc.movie_id = t.id
+JOIN movie_link ml ON ml.movie_id = t.id
+JOIN title t2 ON ml.linked_movie_id = t2.id
+JOIN movie_info mi ON t.id = mi.movie_id
+WHERE cn.country_code = '[us]' 
+AND t.kind_id = 1 
+AND ml.link_type_id = 13 
+AND mi.info_type_id IN(4,8)
+AND mi.info IN('USA', 'English')")
+
+save(sql_reboot, file="reboot.Rda")
+```
+```{r, eval=FALSE}
+#all Hollywood movies per year
+
+allHollywood <- db %>% 
+   dbGetQuery ("SELECT COUNT(t.id), t.production_year 
+FROM title t
+JOIN movie_companies  mc on mc.movie_id = t.id
+JOIN company_name cn ON mc.company_id = cn.id
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE cn.country_code = '[us]'
+AND t.kind_id = 1 
+AND mi.info_type_id IN (4,8) 
+AND mi.info IN ('USA','English')
+GROUP BY production_year")
+
+save(allHollywood, file = "allhollywood.Rda")
 ```
 
 ```{r}
@@ -38,23 +119,23 @@ colnames(sql_reboot)[4] <- "id_reboot"
 colnames(allHollywood)[1] <- "count"
 
 ```
-#number of sequels per year
-#get count of distinct sequel movies since some movies are sequels of more than one movie
+
 ```{r}
+#number of sequels per year
 sequels_year <- sql_sequels %>%
   group_by(production_year_sequel) %>%
   summarize(num_of_sequels = n()) %>%
   arrange(production_year_sequel)
 ```
-#number of remakes per year
 ```{r}
+#number of remakes per year
 remakes_year <- sql_remade %>%
   group_by(production_year_remake) %>%
   summarize(num_of_remakes = n()) %>%
   arrange(production_year_remake)
 ```
-#number of reboots per year
 ```{r}
+#number of reboots per year
 reboots_year <- sql_reboot %>%
   group_by(production_year_reboot) %>%
   summarize(num_of_reboots = n()) %>%
@@ -149,7 +230,7 @@ ggplot(redo_props, aes(x = year)) +
   ggtitle("Proportion of Sequels, Reboots, Remakes \n1900-2019")
 ```
 
-Findings:
+###Findings:
 
 From the plots above, we can see that the frequency of follow-up films has not increased over the past century. Although Hollwood may seem more repetitive today, our findings do not support this claim. One reason may be that there are more follow-up films advertised and featured in the media today, that makes it seem as though there is a rise in follow-up movies, while the follow-up movies only contribute to a small percent of the total movies produced. 
 
@@ -178,7 +259,7 @@ ggplot(sq20,aes(x = year, y = n))+
 ```
 There is a lot more Mutt and Jeff movie sequels than others!
 
-##What is Muff and Jeff and why are there many more sequels than other films?
+###What is Muff and Jeff and why are there many more sequels than other films?
 Mutt and Jeff is a long-running and widely popular American newspaper comic strip created by cartoonist Bud Fisher in 1907 about "two mismatched tinhorns". Historians regard Mutt and Jeff, originally titled A. Mutt, as the first American newspaper cartoon published as a strip of panels, as opposed to a single panel, making it the first "comic strip" to successfully pioneer that since-common format.
 In early July 1911, during the silent era of motion pictures, at David Horsley's Nestor Comedies in Bayonne, New Jersey, Al Christie began turning out a weekly one-reel live-action Mutt and Jeff comedy short, which was based on the comic strip.
 
@@ -191,7 +272,7 @@ Source: https://en.wikipedia.org/wiki/Mutt_and_Jeff
 
 Therefore, it is likely that most of the Mutt and Jeff sequel movies in this database are shorts adapted from newspaper comic stips. We probably don't think of shorts as Hollywood movies nowadays, but it's nonetheless classified as such. We decided to explore more about Mutt and Jeff in relation to other Hollywood sequels.
 
-##So what is the trend for Mutt and Jeff production?
+###So what is the trend for Mutt and Jeff production?
 We try to find all the movies, both sequels and origins, with "Mutt and Jeff" in the movie title, and calculate what poportion of the hollywood sequels is made up of this one franchise from 1910-1922.
 ```{r}
 mj<-sql_sequels %>% 
