@@ -1,31 +1,45 @@
 ---
 title: "mp3"
-author: "Ayumi Mizuno"
+author: "Sunnie Ning & Ayumi Mizuno"
 date: "November 18, 2017"
 output: html_document
 ---
+##Follow-up Films Across Time in Hollywood
+Problem statement: How have the proportion of follow-up films in Hollywood changed over the past century?
 
-```{r, warning=FALSE}
+The purpose of this investigation is to explore the evolution of follow-up films in Hollywood over time. Specifically, we focus on the time frame betwee 1900 and 2019 to investigate whether sequels, remakes, and reboots are more frequent today than they used to be. 
+
+In order to only look at Hollywood movies, we limited movies to ones that were produced by companies based in the United States, were in English, and were produced in the United States. 
+
+From the imdb database, we extracted follow-up movies by defining sequels to be movies that had a "followed by" information type, remakes to be movies that had a "remade as" information type, and reboots to be movies that had a "version of" information type. 
+
+
+```{r}
 load("sequels.Rda")
 load("remakes.Rda")
 load("reboot.Rda")
+load ("allhollywood.Rda")
 ```
 
-```{r, warning=FALSE}
+```{r, message=FALSE}
 library(dplyr)
 library(ggplot2)
+library(ggthemes)
 ```
 
 ```{r}
+#renaming columns of tables
 colnames(sql_sequels)[6] <- "production_year_sequel"
 colnames(sql_remade)[6] <- "production_year_remake"
 colnames(sql_reboot)[6] <- "production_year_reboot"
 colnames(sql_sequels)[4] <- "id_sequel"
 colnames(sql_remade)[4] <- "id_remake"
 colnames(sql_reboot)[4] <- "id_reboot"
+colnames(allHollywood)[1] <- "count"
 
 ```
 #number of sequels per year
+#get count of distinct sequel movies since some movies are sequels of more than one movie
 ```{r}
 sequels_year <- sql_sequels %>%
   group_by(production_year_sequel) %>%
@@ -47,3 +61,162 @@ reboots_year <- sql_reboot %>%
   arrange(production_year_reboot)
 
 ```
+
+```{r}
+# trim data up till year = 2019
+hollywood <- allHollywood %>% 
+  filter (production_year < 2019 & production_year > 1900)
+```
+```{r}
+#join the three tables and tidy table
+totalredo <- remakes_year %>% 
+  full_join(reboots_year, by = c('production_year_remake' = 'production_year_reboot')) %>% 
+  full_join (sequels_year , by = c('production_year_remake' = 'production_year_sequel')) %>%
+  gather(key = type, value = counts, num_of_remakes, num_of_reboots, num_of_sequels) %>%
+  rename(year = production_year_remake) %>%
+  filter(year>1900 & year < 2019)
+
+
+#replace all NAs with 0
+totalredo[is.na(totalredo)] <- 0
+```
+```{r}
+#calculate total proportion of redos 
+totalcounts <- totalredo %>% 
+  group_by(year) %>% 
+  summarize(n=sum(counts)) %>% 
+  left_join(hollywood, by = c('year' = 'production_year')) %>% 
+  filter(year > 1900 & year < 2019) %>%
+  mutate(prop = n/count) %>% 
+  rename(num_of_redos = n) %>% 
+  rename(total_movies = count)
+```
+
+```{r}
+#calculate proportion of each redo 
+redo_props <- totalredo %>%
+  group_by(year) %>%
+  summarize(sequel_n=sum(counts[type=='num_of_sequels']), remake_n=sum(counts[type=='num_of_remakes']), reboot_n=sum(counts[type=='num_of_reboots'])) %>%
+  left_join(hollywood, by = c('year' = 'production_year')) %>% 
+  filter(year > 1900 & year < 2019) %>%
+  mutate(sequel_prop = sequel_n/count, remake_prop = remake_n/count, reboot_prop = reboot_n/count)
+
+```
+
+```{r}
+#graph all three types of redos against all hollywood movies
+ggplot(hollywood, aes(x = production_year, y = count))+
+  geom_line(aes(color = 'black'))+
+  geom_line(data = totalredo, aes(x = year, y = counts, color = type)) +
+  geom_line(data = totalcounts, aes(x = year, y=num_of_redos, color = 'purple'))+
+  xlab("Year") +
+  ylab("Number of Movies")+
+  scale_color_discrete(labels = c('all movies', 'reboots', 'remakes', 'sequels', 'all redos'))+
+  theme(legend.title=element_blank())
+
+
+```
+
+```{r}
+#graph count of redos against all hollywood movies
+ggplot(hollywood, aes(x = production_year, y = count))+
+  geom_line(aes(color = 'all movies'))+
+  geom_line(data = totalcounts, aes(x = year, y=num_of_redos, color = 'redos'))+
+  xlab("Year") +
+  ylab("Number of Movies")+
+  ggtitle("Total Combined Count of Sequels, Remakes, Reboots \n1900-2019")+
+  theme(legend.title=element_blank(), legend.position="right")
+
+```
+
+```{r}
+#graph percentage
+ggplot(totalcounts, aes(x = year, y = prop))+
+  geom_line()+
+  ylab("proportion")+
+  ggtitle("Proportion of Total Combined Sequels, Remakes, Reboots \n1900 - 2019")
+```
+
+```{r}
+#graph proportion of each type of redos 
+ggplot(redo_props, aes(x = year)) +
+  geom_line(aes(y=sequel_prop, color="sequel"))+
+  geom_line(aes(y=remake_prop, color="remake"))+
+  geom_line(aes(y=reboot_prop, color="reboot"))+
+  xlab("Year") +
+  ylab("Proportion")+
+  theme(legend.title=element_blank())+
+  ggtitle("Proportion of Sequels, Reboots, Remakes \n1900-2019")
+```
+
+Findings:
+
+From the plots above, we can see that the frequency of follow-up films has not increased over the past century. Although Hollwood may seem more repetitive today, our findings do not support this claim. One reason may be that there are more follow-up films advertised and featured in the media today, that makes it seem as though there is a rise in follow-up movies, while the follow-up movies only contribute to a small percent of the total movies produced. 
+
+Another noticeable finding is the time period when the frequency increased. The peaks in the plots suggest that there was an increase in the frequency of follow-up films around the 1920s and 1960s. Viewing the trends of each individual type of follow-up shows that sequels make up most of the follow-up films, while remakes make up the least. 
+
+The dramatic increase in the total number of movies as well as follow-ups at around 1920 can be explained by the events and cultural changes occuring in that time period.  
+
+Exploring the history of Hollywood allows us to see that the early 1900s were when films advanced at a great rate. With new technology to produce movies, the entertainment industry was able to expand, with theaters even being used for propaganda during World War I. After the war, the film industry became a central part of American culture, with Hollywood dominating the industry. With the emergence of Hollywood, the 1920s were when many movies as well as movie stars emerged, which explains the peak in the plots at around 1920. 
+Source: http://historycooperative.org/the-history-of-the-hollywood-movie-industry/
+
+
+The frequency of follow up films also increases at around 1920 with the proportion being above 1.0. This can be explained by the fact that the queried sequels included many movies that were sequels of more than one movie. For example, the movie, "Your Last Act" (1941) followed "One Against the World", "Out of Darkness", and several other films. We chose to count all instances of sequel movies instead of counting only distinct movies, in order to capture a more accurate picture of the fequency of follow-up movies. 
+
+
+It seems like there is a peak around 1920 in terms of the proportion of total follow-ups, especially sequels. So we decided to take a look at the original movies: 
+```{r}
+sq20<- sql_sequels %>% 
+  filter(production_year_sequel <1930 & production_year_sequel>1915) %>% 
+  select(movie, sequel_movie, production_year) %>% 
+  group_by(movie) %>% 
+  summarize(n = n(),year= as.integer(mean(production_year))) 
+```
+```{r}
+ggplot(sq20,aes(x = year, y = n))+
+  geom_text(aes (label = movie),alpha = 0.7, position ='jitter')
+```
+There is a lot more Mutt and Jeff movie sequels than others!
+
+##What is Muff and Jeff and why are there many more sequels than other films?
+Mutt and Jeff is a long-running and widely popular American newspaper comic strip created by cartoonist Bud Fisher in 1907 about "two mismatched tinhorns". Historians regard Mutt and Jeff, originally titled A. Mutt, as the first American newspaper cartoon published as a strip of panels, as opposed to a single panel, making it the first "comic strip" to successfully pioneer that since-common format.
+In early July 1911, during the silent era of motion pictures, at David Horsley's Nestor Comedies in Bayonne, New Jersey, Al Christie began turning out a weekly one-reel live-action Mutt and Jeff comedy short, which was based on the comic strip.
+
+The Mutt and Jeff serial was extremely popular and after the Nestor Company established a studio in Hollywood, in late October 1911, Christie continued to oversee a weekly production of a one-reel episode.
+
+In the fall of 1911, Nestor began using an alternate method of displaying the intertitles in the Mutt and Jeff comedies. Instead of a cut to the dialogue titles, the dialogue was displayed at the bottom of the image on a black background so the audience could read them as a subtitle, which was similar to the way they appeared in the cartoon strips. Horsley was very proud of the device and claimed to have entered a patent on it. He advertised the Mutt and Jeff movies as "talking pictures".
+
+In 1916, Fisher licensed the production of Mutt and Jeff for animation with pioneers Charles Bowers and Raoul Barré of the Barré Studio. The animated series lasted 11 years and more than 300 animated Mutt and Jeff shorts were released by the Fox Film Corporation, making it the longest continuing theatrical animated movie serial and second longest to Krazy Kat.
+Source: https://en.wikipedia.org/wiki/Mutt_and_Jeff 
+
+Therefore, it is likely that most of the Mutt and Jeff sequel movies in this database are shorts adapted from newspaper comic stips. We probably don't think of shorts as Hollywood movies nowadays, but it's nonetheless classified as such. We decided to explore more about Mutt and Jeff in relation to other Hollywood sequels.
+
+##So what is the trend for Mutt and Jeff production?
+We try to find all the movies, both sequels and origins, with "Mutt and Jeff" in the movie title, and calculate what poportion of the hollywood sequels is made up of this one franchise from 1910-1922.
+```{r}
+mj<-sql_sequels %>% 
+  filter(grepl("Mutt and Jeff",sequel_movie)| grepl("Mutt and Jeff",movie)) %>% 
+  group_by(production_year_sequel) %>% 
+  summarize(counts = n()) %>% 
+  right_join(totalcounts, by = c('production_year_sequel' = 'year')) %>% 
+  select(production_year_sequel,counts,num_of_redos) %>% 
+  replace_na(list (counts = 0)) %>% 
+  mutate(prop_mj = counts/num_of_redos) %>% 
+  rename (year = production_year_sequel)
+```
+```{r}
+ggplot(mj,aes(x = parse_integer(year), y = counts))+
+  geom_bar(stat = 'identity', alpha = 0.6)+
+  geom_line(aes(y = prop_mj/0.0006), color='red')+
+  scale_y_continuous(name = "Total counts of Mutt and Jeff", sec.axis = sec_axis(~ . * 0.0006, name = "Proportion of Mutt and Jeff to all Sequels"))+
+  scale_x_continuous(limits = c(1911,1922),breaks =c(1910,1911,1912,1913,1914,1915,1916,1917,1918,1919,1920,1921,1922),
+name = "year", labels = c(1910,1911,1912,1913,1914,1915,1916,1917,1918,1919,1920,1921,1922))+
+  theme(axis.text.y.right=element_text(color='red'))
+
+```
+From this graph we can see that although the production of Muff and Jeff franchise peaked at around 1920, consisting of almost 1600 movies, this sequel makes up less than 25% of the total sequels in the height of its years.  
+
+
+Github:  https://github.com/ayumizuno/mp3.git
+
+
