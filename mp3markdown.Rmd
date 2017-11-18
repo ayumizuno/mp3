@@ -75,3 +75,20 @@ AND mi.info IN('USA', 'English')")
 ```{r}
 save(sql_reboot, file="reboot.Rda")
 ```
+#all Hollywood movies per year
+```{r}
+allHollywood <- db %>% 
+   dbGetQuery ("SELECT COUNT(t.id), t.production_year 
+FROM title t
+JOIN movie_companies  mc on mc.movie_id = t.id
+JOIN company_name cn ON mc.company_id = cn.id
+JOIN movie_info mi ON mi.movie_id = t.id
+WHERE cn.country_code = '[us]'
+AND t.kind_id = 1 
+AND mi.info_type_id IN (4,8) 
+AND mi.info IN ('USA','English')
+GROUP BY production_year")
+```
+```{r}
+save(allHollywood, file = "allhollywood.Rda")
+```
