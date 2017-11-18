@@ -1,0 +1,49 @@
+---
+title: "mp3"
+author: "Ayumi Mizuno"
+date: "November 18, 2017"
+output: html_document
+---
+
+```{r, warning=FALSE}
+load("sequels.Rda")
+load("remakes.Rda")
+load("reboot.Rda")
+```
+
+```{r, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+colnames(sql_sequels)[6] <- "production_year_sequel"
+colnames(sql_remade)[6] <- "production_year_remake"
+colnames(sql_reboot)[6] <- "production_year_reboot"
+colnames(sql_sequels)[4] <- "id_sequel"
+colnames(sql_remade)[4] <- "id_remake"
+colnames(sql_reboot)[4] <- "id_reboot"
+
+```
+#number of sequels per year
+```{r}
+sequels_year <- sql_sequels %>%
+  group_by(production_year_sequel) %>%
+  summarize(num_of_sequels = n()) %>%
+  arrange(production_year_sequel)
+```
+#number of remakes per year
+```{r}
+remakes_year <- sql_remade %>%
+  group_by(production_year_remake) %>%
+  summarize(num_of_remakes = n()) %>%
+  arrange(production_year_remake)
+```
+#number of reboots per year
+```{r}
+reboots_year <- sql_reboot %>%
+  group_by(production_year_reboot) %>%
+  summarize(num_of_reboots = n()) %>%
+  arrange(production_year_reboot)
+
+```
