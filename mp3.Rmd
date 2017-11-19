@@ -232,7 +232,8 @@ ggplot(redo_props, aes(x = year)) +
 
 ###Findings:
 
-From the plots above, we can see that the frequency of follow-up films has not increased over the past century. Although Hollwood may seem more repetitive today, our findings do not support this claim. One reason may be that there are more follow-up films advertised and featured in the media today, that makes it seem as though there is a rise in follow-up movies, while the follow-up movies only contribute to a small percent of the total movies produced. 
+From the plots above, we can see that the frequency of follow-up films has not increased over the past century. Although Hollwood may seem more repetitive today, our findings do not support this claim. One reason may be that there are more follow-up films advertised and featured in the media today, that makes it seem as though there is a rise in follow-up movies, while the follow-up movies only contribute to a small percent of the total movies produced. According to The Atlantic, "audiences are ignoring everything that isn't a sequel, adaptation, or reboot", which could possibly explain why top movies today may be related to multiple movies.
+Source: https://www.theatlantic.com/business/archive/2016/06/hollywood-has-a-huge-millennial-problem/486209/
 
 Another noticeable finding is the time period when the frequency increased. The peaks in the plots suggest that there was an increase in the frequency of follow-up films around the 1920s and 1960s. Viewing the trends of each individual type of follow-up shows that sequels make up most of the follow-up films, while remakes make up the least. 
 
