@@ -265,17 +265,19 @@ ggplot(sq20,aes(x = year, y = n))+
 There is a lot more Mutt and Jeff movie sequels than others!
 
 ###What is Muff and Jeff and why are there many more sequels than other films?
-Mutt and Jeff is a long-running and widely popular American newspaper comic strip created by cartoonist Bud Fisher in 1907 about "two mismatched tinhorns". Historians regard Mutt and Jeff, originally titled A. Mutt, as the first American newspaper cartoon published as a strip of panels, as opposed to a single panel, making it the first "comic strip" to successfully pioneer that since-common format.
-In early July 1911, during the silent era of motion pictures, at David Horsley's Nestor Comedies in Bayonne, New Jersey, Al Christie began turning out a weekly one-reel live-action Mutt and Jeff comedy short, which was based on the comic strip.
+Mutt and Jeff is a long-running and widely popular American newspaper comic strip created by cartoonist Harry Conway “Bud” Fisher in 1907 about “two mismatched tinhorns”.  Mutt and Jeff is considered the first daily comic strip with continuing characters. They were among the first comic strip properties to successfully translate to the screen, and were the earliest animated characters to display appealing personalities attractive to working class America. 
 
-The Mutt and Jeff serial was extremely popular and after the Nestor Company established a studio in Hollywood, in late October 1911, Christie continued to oversee a weekly production of a one-reel episode.
+In early July 1911, during the silent era of motion pictures, Al Christie began turning out a weekly Mutt and Jeff comedy short, which was based on the comic strip. The Mutt and Jeff serial was extremely popular and after the Nestor Company established a studio in Hollywood to take over the weekly production.
+![Mutts & Jeff: 2 May 1909, 5 December 1909 27 February 1910, 6 June 1910](http://comicskingdom.com/system/media/3240_page3_original.png?1438796512 (332 kB))
 
-In the fall of 1911, Nestor began using an alternate method of displaying the intertitles in the Mutt and Jeff comedies. Instead of a cut to the dialogue titles, the dialogue was displayed at the bottom of the image on a black background so the audience could read them as a subtitle, which was similar to the way they appeared in the cartoon strips. Horsley was very proud of the device and claimed to have entered a patent on it. He advertised the Mutt and Jeff movies as "talking pictures".
+By 1914, animated cartoons were becoming a regular part of the movie program. Many newspaper cartoonists lent their hand to the animation process with varying degrees of success. An animation contract for Mutt and Jeff was secured in 1916 with Charles Bowers and Raoul Barre’. Barre’ had the distinction of having established the first studio to produce animated cartoons for theaters, preceding the more famous Bray Studio. 
 
-In 1916, Fisher licensed the production of Mutt and Jeff for animation with pioneers Charles Bowers and Raoul Barré of the Barré Studio. The animated series lasted 11 years and more than 300 animated Mutt and Jeff shorts were released by the Fox Film Corporation, making it the longest continuing theatrical animated movie serial and second longest to Krazy Kat.
+Source: http://www.traditionalanimation.com/2014/mutt-and-jeff-the-original-animated-odd-couple/
 
+The animated series lasted 11 years and more than 300 animated Mutt and Jeff shorts were released by the Fox Film Corporation, making it the longest continuing theatrical animated movie serial. 
 
-Source: https://en.wikipedia.org/wiki/Mutt_and_Jeff 
+Source: https://en.wikipedia.org/wiki/Mutt_and_Jeff
+
 
 Therefore, it is likely that most of the Mutt and Jeff sequel movies in this database are shorts adapted from newspaper comic stips. We probably don't think of shorts as Hollywood movies nowadays, but it's nonetheless classified as such. We decided to explore more about Mutt and Jeff in relation to other Hollywood sequels.
 
