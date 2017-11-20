@@ -1,10 +1,9 @@
 ---
-title: "mp3"
+title: "Follow-up Films Across Time in Hollywood"
 author: "Sunnie Ning & Ayumi Mizuno"
 date: "November 18, 2017"
 output: html_document
 ---
-##Follow-up Films Across Time in Hollywood
 ###Problem statement: 
 How have the proportion of follow-up films in Hollywood changed over the past century?
 
@@ -41,7 +40,7 @@ sql_sequels <- db %>%
   dbGetQuery("SELECT DISTINCT(t.id), t.title AS movie, t.production_year, t2.id, t2.title AS sequel_movie, t2.production_year
 FROM movie_companies mc
 JOIN company_name cn ON mc.company_id = cn.id
-JOIN title t ON mc.movie_id = t.id
+JOIN title t ON mc.movie_id = t.id                 /*used index column on title table*/
 JOIN movie_link ml ON ml.movie_id = t.id
 JOIN title t2 ON ml.linked_movie_id = t2.id
 JOIN movie_info mi ON t.id = mi.movie_id
@@ -193,22 +192,13 @@ ggplot(hollywood, aes(x = production_year, y = count))+
   xlab("Year") +
   ylab("Number of Movies")+
   scale_color_discrete(labels = c('all movies', 'reboots', 'remakes', 'sequels', 'all redos'))+
-  theme(legend.title=element_blank())
+  theme(legend.title=element_blank())+
+  ggtitle("Number of Movies from 1900-2019")
 
 
 ```
 
-```{r}
-#graph count of redos against all hollywood movies
-ggplot(hollywood, aes(x = production_year, y = count))+
-  geom_line(aes(color = 'all movies'))+
-  geom_line(data = totalcounts, aes(x = year, y=num_of_redos, color = 'redos'))+
-  xlab("Year") +
-  ylab("Number of Movies")+
-  ggtitle("Total Combined Count of Sequels, Remakes, Reboots \n1900-2019")+
-  theme(legend.title=element_blank(), legend.position="right")
 
-```
 
 ```{r}
 #graph percentage
@@ -218,17 +208,6 @@ ggplot(totalcounts, aes(x = year, y = prop))+
   ggtitle("Proportion of Total Combined Sequels, Remakes, Reboots \n1900 - 2019")
 ```
 
-```{r}
-#graph proportion of each type of redos 
-ggplot(redo_props, aes(x = year)) +
-  geom_line(aes(y=sequel_prop, color="sequel"))+
-  geom_line(aes(y=remake_prop, color="remake"))+
-  geom_line(aes(y=reboot_prop, color="reboot"))+
-  xlab("Year") +
-  ylab("Proportion")+
-  theme(legend.title=element_blank())+
-  ggtitle("Proportion of Sequels, Reboots, Remakes \n1900-2019")
-```
 
 ###Findings:
 
@@ -258,7 +237,10 @@ sq20<- sql_sequels %>%
 ```
 ```{r}
 ggplot(sq20,aes(x = year, y = n))+
-  geom_text(aes (label = movie),alpha = 0.7, position ='jitter')
+  geom_point(alpha = 0.7, position ='jitter')+
+  annotate("text",x=1915, y= 2600, color = "red",label = "Mutt and Jeff")+
+  ylab("Number of Sequels")+
+  ggtitle("Number of Sequels by Movie from 1905-1930")
 ```
 
 
@@ -307,6 +289,11 @@ name = "year", labels = c(1910,1911,1912,1913,1914,1915,1916,1917,1918,1919,1920
 
 
 From this graph we can see that although the production of Muff and Jeff franchise peaked at around 1920, consisting of almost 1600 movies, this sequel makes up less than 25% of the total sequels in the height of its years.  
+
+
+##Conclusion  
+From our database query, wrangling and visualization, we found that there were more follow-up movies in 1920s than in any other period. However, we think that our findings are limited because of the ambiguity of how we defined “follow-up movies” and “Hollywood.” For example, the definition of sequels is blurry, and the films classified as such might not be considered a sequel by ordinary contemporary audience. Also, the movies that are considered Hollywood nowadays might not be produced in the US any more. Moreover, since the 1900, the film industries has been through many changes, and what was considered a “movie” back then, which includes short comic strips, is different from a movie nowadays. In addition to the ambiguity in definition, the database does not contain any documentation that thoroughly explains how were the movie categorized and entered into the system. Overall, our data still showed a drastic spike of follow-ups around the 1920s, and we learned a lot about how movies have progressed over time in this project.
+
 
 
 Github:  https://github.com/ayumizuno/mp3.git
