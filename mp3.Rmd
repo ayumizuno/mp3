@@ -233,6 +233,7 @@ ggplot(redo_props, aes(x = year)) +
 ###Findings:
 
 From the plots above, we can see that the frequency of follow-up films has not increased over the past century. Although Hollwood may seem more repetitive today, our findings do not support this claim. One reason may be that there are more follow-up films advertised and featured in the media today, that makes it seem as though there is a rise in follow-up movies, while the follow-up movies only contribute to a small percent of the total movies produced. According to The Atlantic, "audiences are ignoring everything that isn't a sequel, adaptation, or reboot", which could possibly explain why top movies today may be related to multiple movies.
+
 Source: https://www.theatlantic.com/business/archive/2016/06/hollywood-has-a-huge-millennial-problem/486209/
 
 Another noticeable finding is the time period when the frequency increased. The peaks in the plots suggest that there was an increase in the frequency of follow-up films around the 1920s and 1960s. Viewing the trends of each individual type of follow-up shows that sequels make up most of the follow-up films, while remakes make up the least. 
@@ -240,6 +241,7 @@ Another noticeable finding is the time period when the frequency increased. The 
 The dramatic increase in the total number of movies as well as follow-ups at around 1920 can be explained by the events and cultural changes occuring in that time period.  
 
 Exploring the history of Hollywood allows us to see that the early 1900s were when films advanced at a great rate. With new technology to produce movies, the entertainment industry was able to expand, with theaters even being used for propaganda during World War I. After the war, the film industry became a central part of American culture, with Hollywood dominating the industry. With the emergence of Hollywood, the 1920s were when many movies as well as movie stars emerged, which explains the peak in the plots at around 1920. 
+
 Source: http://historycooperative.org/the-history-of-the-hollywood-movie-industry/
 
 
@@ -258,6 +260,8 @@ sq20<- sql_sequels %>%
 ggplot(sq20,aes(x = year, y = n))+
   geom_text(aes (label = movie),alpha = 0.7, position ='jitter')
 ```
+
+
 There is a lot more Mutt and Jeff movie sequels than others!
 
 ###What is Muff and Jeff and why are there many more sequels than other films?
@@ -269,6 +273,8 @@ The Mutt and Jeff serial was extremely popular and after the Nestor Company esta
 In the fall of 1911, Nestor began using an alternate method of displaying the intertitles in the Mutt and Jeff comedies. Instead of a cut to the dialogue titles, the dialogue was displayed at the bottom of the image on a black background so the audience could read them as a subtitle, which was similar to the way they appeared in the cartoon strips. Horsley was very proud of the device and claimed to have entered a patent on it. He advertised the Mutt and Jeff movies as "talking pictures".
 
 In 1916, Fisher licensed the production of Mutt and Jeff for animation with pioneers Charles Bowers and Raoul Barré of the Barré Studio. The animated series lasted 11 years and more than 300 animated Mutt and Jeff shorts were released by the Fox Film Corporation, making it the longest continuing theatrical animated movie serial and second longest to Krazy Kat.
+
+
 Source: https://en.wikipedia.org/wiki/Mutt_and_Jeff 
 
 Therefore, it is likely that most of the Mutt and Jeff sequel movies in this database are shorts adapted from newspaper comic stips. We probably don't think of shorts as Hollywood movies nowadays, but it's nonetheless classified as such. We decided to explore more about Mutt and Jeff in relation to other Hollywood sequels.
@@ -286,7 +292,7 @@ mj<-sql_sequels %>%
   mutate(prop_mj = counts/num_of_redos) %>% 
   rename (year = production_year_sequel)
 ```
-```{r}
+```{r, warning=FALSE}
 ggplot(mj,aes(x = parse_integer(year), y = counts))+
   geom_bar(stat = 'identity', alpha = 0.6)+
   geom_line(aes(y = prop_mj/0.0006), color='red')+
@@ -296,6 +302,8 @@ name = "year", labels = c(1910,1911,1912,1913,1914,1915,1916,1917,1918,1919,1920
   theme(axis.text.y.right=element_text(color='red'))
 
 ```
+
+
 From this graph we can see that although the production of Muff and Jeff franchise peaked at around 1920, consisting of almost 1600 movies, this sequel makes up less than 25% of the total sequels in the height of its years.  
 
 
